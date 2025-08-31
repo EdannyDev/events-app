@@ -10,8 +10,7 @@ Este proyecto es un **sistema gestor de eventos** que permite a los usuarios:
 
 El sistema está diseñado para **gestionar actividades de manera dinámica y visual**, integrando calendario, mapas interactivos y autenticación de usuarios.  
 
-## 🛠️Tecnologías utilizadas  
-
+## 🛠️Tecnologías utilizadas
 ### Frontend  
 - **Next.js**  
 - **React**  
