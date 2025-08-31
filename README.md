@@ -1,47 +1,52 @@
-# 🚀Sistema Gestor de Eventos – Frontend y Backend  
+# 🚀Tienda en línea de videojuegos – Frontend y Backend  
 
 ## 📌Descripción  
-Este proyecto es un **sistema gestor de eventos** que permite a los usuarios:  
-- Crear, editar y eliminar sus propios eventos.  
-- Visualizar los eventos en un **calendario interactivo**.  
-- Consultar la **ubicación de los eventos en un mapa** con Leaflet.  
-- Ver detalles completos de cada evento.  
-- Registrar a otros usuarios en los eventos creados.  
+Este proyecto es una **tienda en línea de videojuegos**, que incluye un carrito de compras y un panel administrativo integrado.  
 
-El sistema está diseñado para **gestionar actividades de manera dinámica y visual**, integrando calendario, mapas interactivos y autenticación de usuarios.  
+**Usuarios normales pueden:**  
+- Explorar el catálogo de videojuegos.  
+- Agregar productos al carrito y realizar compras seguras mediante Stripe.  
+
+**Administradores:**  
+- Gestionar productos, usuarios y pedidos desde el panel administrativo.  
+
+El sistema combina **frontend y backend** en la misma aplicación, integrando tanto la interfaz de usuario como la lógica de negocio.  
 
 ## 🛠️Tecnologías utilizadas
 ### Frontend  
-- **Next.js**  
-- **React**  
-- **Emotion Styled** (estilos)  
-- **FontAwesome** (íconos)  
-- **FullCalendar** / **React Big Calendar** (calendarios interactivos)  
-- **React-Leaflet** (mapas interactivos)  
-- **Axios** (consumo de APIs)  
+- **Next.js** – framework de React para aplicaciones web modernas.  
+- **Emotion Styled** – librería de estilos CSS-in-JS.  
+- **Animate.css** – animaciones predefinidas.  
+- **FontAwesome** – íconos para la UI.  
+- **Axios** – cliente HTTP.  
+- **Stripe.js + @stripe/react-stripe-js** – integración de pagos con tarjeta.  
 
 ### Backend  
-- **Node.js**  
-- **Express** (Framework para APIs REST)  
-- **MongoDB / Mongoose** (Base de datos NoSQL y modelado de datos)  
-- **JWT** (autenticación y autorización)  
-- **bcryptjs** (encriptación de contraseñas)  
-- **dotenv** (variables de entorno)  
-- **CORS** (seguridad en solicitudes cross-origin)
+- **Node.js + Express** – servidor backend.  
+- **MongoDB / Mongoose** – base de datos NoSQL.  
+- **JWT + bcryptjs** – autenticación y seguridad.  
+- **Multer** – gestión de archivos (imágenes de productos).  
+- **dotenv y cors** – configuración y seguridad.  
 
 ## ⚙️Instalación y ejecución  
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/EdannyDev/events-app.git
+git clone https://github.com/EdannyDev/games-app.git
 
 # 2. Instalar dependencias
 npm install
 
-# 3. Configurar variables de entorno en .env
+# 3. Configurar variables de entorno
+Frontend (Next.js) .env.local
+
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxxx
+
+Backend (Express) .env
 
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/eventsDB
+MONGO_URI=mongodb://localhost:27017/gamesDB
 JWT_SECRET=tu_secreto_jwt
 
 # 4. Ejecutar la aplicación
@@ -54,20 +59,20 @@ yarn dev
 # 6. El sistema estará disponible en el navegador:
 http://localhost:3000
 
-#7 . El backend estará funcionando en:
+# 7. El backend estará funcionando en:
 http://localhost:5000
 
 ```
 
 ## 🗂️Endpoints principales
-- Eventos: `/api/eventos`
-- Usuarios: `/api/usuarios`
+- Archivos estáticos: `/uploads`
+- Usuarios: `/api/users`
+- Juegos: `/api/games`
 
 ## ✨Características principales
-- Calendario interactivo para ver todos los eventos creados.
-- Mapa con Leaflet para ubicar los eventos de forma visual.
-- Gestión de eventos: crear, editar y eliminar eventos propios.
-- Registro de usuarios en eventos para asistencia y control.
-- Autenticación con JWT y bcryptjs (login y registro de usuarios).
-- Interfaz moderna y responsiva con Next.js + React.
-- Seguridad: solo los creadores pueden modificar o eliminar sus eventos.
+- Carrito de compras con pagos seguros mediante Stripe.
+- Catálogo dinámico de videojuegos, con detalles y búsqueda.
+- Autenticación de usuarios con roles (usuario y administrador).
+- Panel administrativo: Los administradores podrán gestionar juegos y usuarios.
+- Subida de imágenes para productos mediante Multer.
+- Interfaz moderna y animada con Emotion Styled, Animate.css y FontAwesome.
