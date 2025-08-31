@@ -12,8 +12,7 @@ El sistema está diseñado para **gestionar actividades de manera dinámica y vi
 
 ## 🛠️Tecnologías utilizadas
 ### Frontend  
-- **Next.js**  
-- **React**  
+- **Next.js** (Framework para frontend)    
 - **Emotion Styled** (estilos)  
 - **FontAwesome** (íconos)  
 - **FullCalendar / React Big Calendar** (calendarios interactivos)  
