@@ -27,6 +27,7 @@ El sistema está diseñado para **gestionar actividades de manera dinámica y vi
 - **bcryptjs** (encriptación de contraseñas)  
 - **dotenv** (variables de entorno)  
 - **CORS** (seguridad en solicitudes cross-origin)
+- **npm** (gestor de dependencias backend)
 
 ## ⚙️Instalación y ejecución  
 
