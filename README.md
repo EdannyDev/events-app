@@ -59,6 +59,10 @@ http://localhost:5000
 
 ```
 
+## 🗂️Endpoints principales
+- Eventos: `/api/eventos`
+- Usuarios: `/api/usuarios`
+
 ## ✨Características principales
 - Calendario interactivo para ver todos los eventos creados.
 - Mapa con Leaflet para ubicar los eventos de forma visual.
