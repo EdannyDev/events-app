@@ -1,140 +1,118 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import Layout from '@/frontend/components/layout';
+import styled from '@emotion/styled';
 import {
-  EditarEventoForm,
-  FormTitle,
-  FormInput,
-  FormSelect,
-  FormButton
-} from '../frontend/styles/editEvents.styles'; // Ajustar la ruta según la ubicación de los estilos
+    EditarEventoForm,
+    FormTitle,
+    FormInput,
+    FormSelect,
+    FormButton
+} from '../frontend/styles/editEvents.styles';
 
-const libraries = ["places"];
+const MapClient = dynamic(() => import('../frontend/components/mapclient'), { ssr: false });
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '400px'
-};
+const PageContainer = styled.div`
+    padding-top: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+`;
 
 const EditarEvento = ({ eventoId }) => {
-  const [evento, setEvento] = useState({
-    nombre: '',
-    fecha: '',
-    hora: '',
-    descripcion: '',
-    invitados: '',
-    costo: '',
-    ubicacion: { type: 'Point', coordinates: ['', ''] },
-    estado: ''
-  });
-  const [latitud, setLatitud] = useState('');
-  const [longitud, setLongitud] = useState('');
-  const router = useRouter();
+    const [evento, setEvento] = useState({
+        nombre: '', fecha: '', hora: '', descripcion: '',
+        invitados: '', costo: '', ubicacion: { coordinates: ['', ''] }, estado: ''
+    });
+    const [latitud, setLatitud] = useState(null);
+    const [longitud, setLongitud] = useState(null);
+    const router = useRouter();
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyB-uMy02O6IY8vmhH9cViaPoRhk9icy0Ds",
-    libraries,
-    loading: 'async'
-  });
+    useEffect(() => {
+        if (!eventoId) return;
+        const fetchEvento = async () => {
+            try {
+                const resp = await axios.get(`http://localhost:5000/api/eventos/${eventoId}`);
+                const e = resp.data;
+                setEvento({
+                    nombre: e.nombre || '',
+                    fecha: new Date(e.fecha).toISOString().slice(0, 10),
+                    hora: e.hora || '',
+                    descripcion: e.descripcion || '',
+                    invitados: (e.invitados || []).join(', '),
+                    costo: e.costo ? e.costo.toString() : '',
+                    ubicacion: e.ubicacion || { coordinates: ['', ''] },
+                    estado: e.estado || ''
+                });
+                if (e.ubicacion?.coordinates[1] && e.ubicacion?.coordinates[0]) {
+                    setLatitud(e.ubicacion.coordinates[1]);
+                    setLongitud(e.ubicacion.coordinates[0]);
+                }
+            } catch (err) {
+                
+            }
+        };
+        fetchEvento();
+    }, [eventoId]);
 
-  useEffect(() => {
-    const obtenerEvento = async () => {
-      try {
-        const respuesta = await axios.get(`http://localhost:5000/api/eventos/${eventoId}`);
-        if (respuesta.data) {
-          const { nombre, fecha, hora, descripcion, invitados, costo, ubicacion, estado } = respuesta.data;
-          setEvento({
-            nombre: nombre || '',
-            fecha: new Date(fecha).toISOString().slice(0, 10),
-            hora: hora || '',
-            descripcion: descripcion || '',
-            invitados: (invitados || []).join(', '),
-            costo: costo ? costo.toString() : '',
-            ubicacion: {
-              type: ubicacion.type || 'Point',
-              coordinates: ubicacion.coordinates || ['', ''],
-            },
-            estado: estado || ''
-          });
-          setLatitud(ubicacion.coordinates[1] || '');
-          setLongitud(ubicacion.coordinates[0] || '');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.put(`http://localhost:5000/api/eventos/${eventoId}`, {
+                ...evento,
+                ubicacion: { type: 'Point', coordinates: [parseFloat(longitud), parseFloat(latitud)] }
+            });
+            alert('Evento actualizado correctamente');
+            router.push('/table');
+        } catch (err) {
+            alert('Error al actualizar evento');
         }
-      } catch (error) {
-        console.error('Error al obtener evento:', error);
-      }
     };
 
-    if (eventoId) {
-      obtenerEvento();
-    }
-  }, [eventoId]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEvento({ ...evento, [name]: value });
+    };
 
-  const handleMapClick = useCallback((event) => {
-    setLatitud(event.latLng.lat());
-    setLongitud(event.latLng.lng());
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.put(`http://localhost:5000/api/eventos/${eventoId}`, {
-        ...evento,
-        ubicacion: {
-          type: 'Point',
-          coordinates: [parseFloat(longitud), parseFloat(latitud)]
-        }
-      });
-      alert('Evento actualizado correctamente');
-      router.push('/table');
-    } catch (error) {
-      console.error('Error al actualizar evento:', error);
-      alert('Error al actualizar evento');
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEvento({ ...evento, [name]: value });
-  };
-
-  if (loadError) return "Error al cargar el mapa";
-  if (!isLoaded) return "Cargando mapa...";
-
-  return (
-    <Layout>
-      <EditarEventoForm onSubmit={handleSubmit}>
-        <FormTitle>Editar Evento</FormTitle>
-        <FormInput type="text" name="nombre" placeholder="Nombre del evento" value={evento.nombre} onChange={handleChange} required />
-        <FormInput type="date" name="fecha" placeholder="Fecha del evento" value={evento.fecha} onChange={handleChange} required />
-        <FormInput type="time" name="hora" placeholder="Hora del evento" value={evento.hora} onChange={handleChange} required />
-        <FormInput as="textarea" name="descripcion" placeholder="Descripción del evento" value={evento.descripcion} onChange={handleChange} required />
-        <FormInput type="text" name="invitados" placeholder="Invitados" value={evento.invitados} onChange={handleChange} />
-        <FormInput type="number" name="costo" placeholder="Costo del evento" value={evento.costo} onChange={handleChange} required />
-        
-        <FormSelect name="estado" value={evento.estado} onChange={handleChange}>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
-          <option value="cancelado">Cancelado</option>
-          <option value="concluido">Concluido</option>
-        </FormSelect>
-        
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          zoom={8}
-          center={latitud && longitud ? { lat: parseFloat(latitud), lng: parseFloat(longitud) } : { lat: 19.432608, lng: -99.133209 }}
-          onClick={handleMapClick}
-        >
-          {latitud && longitud && <Marker position={{ lat: parseFloat(latitud), lng: parseFloat(longitud) }} />}
-        </GoogleMap>
-        <br></br>
-        <FormInput type="text" placeholder="Latitud" value={latitud || ''} readOnly />
-        <FormInput type="text" placeholder="Longitud" value={longitud || ''} readOnly />
-        <FormButton type="submit">Guardar Cambios</FormButton>
-      </EditarEventoForm>
-    </Layout>
-  );
+    return (
+        <Layout>
+            <PageContainer>
+                <EditarEventoForm onSubmit={handleSubmit}>
+                    <FormTitle>Editar Evento</FormTitle>
+                    <FormInput type="text" name="nombre" placeholder="Nombre del evento" value={evento.nombre} onChange={handleChange} required />
+                    <FormInput type="date" name="fecha" value={evento.fecha} onChange={handleChange} required />
+                    <FormInput type="time" name="hora" value={evento.hora} onChange={handleChange} required />
+                    <FormInput as="textarea" name="descripcion" value={evento.descripcion} onChange={handleChange} required />
+                    <FormInput type="text" name="invitados" value={evento.invitados} onChange={handleChange} />
+                    <FormInput type="number" name="costo" value={evento.costo} onChange={handleChange} required />
+                    <FormSelect name="estado" value={evento.estado} onChange={handleChange}>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                        <option value="cancelado">Cancelado</option>
+                        <option value="concluido">Concluido</option>
+                    </FormSelect>
+                    {latitud !== null && longitud !== null ? (
+                        <MapClient
+                            latitud={latitud}
+                            longitud={longitud}
+                            setLatitud={setLatitud}
+                            setLongitud={setLongitud}
+                            style={{ height: '400px', width: '100%' }}
+                        />
+                    ) : (
+                        <div>Cargando mapa...</div>
+                    )}
+                    <div style={{ marginTop: '20px' }}></div>
+                    <FormInput type="text" placeholder="Latitud" value={latitud || ''} readOnly />
+                    <FormInput type="text" placeholder="Longitud" value={longitud || ''} readOnly />
+                    <FormButton type="submit">Guardar Cambios</FormButton>
+                </EditarEventoForm>
+            </PageContainer>
+        </Layout>
+    );
 };
 
 export default EditarEvento;

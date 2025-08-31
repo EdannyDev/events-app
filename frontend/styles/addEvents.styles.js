@@ -2,12 +2,11 @@ import styled from '@emotion/styled';
 
 export const CrearEventoForm = styled.form`
     max-width: 600px;
-    margin: 100px auto; /* Centramos el formulario verticalmente y dejamos espacio arriba */
     padding: 20px;
-    background-color: white; /* Fondo blanco para la página */
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #333; /* Color de texto */
+    color: #333;
 `;
 
 export const FormTitle = styled.h1`
@@ -19,7 +18,7 @@ export const FormInput = styled.input`
     width: 100%;
     margin-bottom: 10px;
     padding: 10px;
-    border: 1px solid #333; /* Borde gris oscuro */
+    border: 1px solid #333;
     border-radius: 4px;
     font-size: 16px;
 
